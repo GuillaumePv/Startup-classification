@@ -8,7 +8,7 @@ import threading
 
 ## Parallezing
 import asyncio
-import aiohttp
+
 import time
 
 from multiprocessing import Pool, cpu_count
@@ -23,7 +23,8 @@ if "MBP-de-admin" in computer_name or "MacBook-Pro-de-admin" in computer_name or
 
 else:
     # print("VM")
-    path_data_github = "Z:/projects/ai-specialization/data/github_org_accounts.csv"
+    path_data = "Z:/projects/ai-specialization/data"
+    path_data_github = path_data + "/github_org_accounts.csv"
 
  # Define an output queue
 # output = Queue()
@@ -55,7 +56,7 @@ urls = df['domain'].values
 if __name__ == '__main__':
     start=time.time()
     print("=== Processing ===")
-    with ThreadPoolExecutor(max_workers=20) as p:
+    with ThreadPoolExecutor(max_workers=25) as p:
         p.map(fetch_links,urls[:])
 
     # for url in tqdm(urls[:10]):
