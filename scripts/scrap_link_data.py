@@ -14,16 +14,7 @@ import time
 from multiprocessing import Pool, cpu_count
 from concurrent.futures import ThreadPoolExecutor
 
-computer_name = socket.gethostname()
-print(computer_name)
-if "MBP-de-admin" in computer_name or "MacBook-Pro-de-admin" in computer_name or "pulse" in computer_name:
-    # print("Guillaume's computer")
-    path_data = "/Volumes/RECHERCHE/FAC/HEC/SGS/cpeukert/digi/D2c/projects/ai-specialization/data/"
-    path_data_github = path_data + "github_org_accounts.csv" # generate better path
-
-else:
-    # print("VM")
-    path_data_github = "Z:/projects/ai-specialization/data/github_org_accounts.csv"
+from path import path_data_github, path_data
 
  # Define an output queue
 # output = Queue()
