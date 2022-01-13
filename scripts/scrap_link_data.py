@@ -8,7 +8,7 @@ import threading
 
 ## Parallezing
 import asyncio
-import aiohttp
+
 import time
 
 from multiprocessing import Pool, cpu_count
@@ -46,7 +46,7 @@ urls = df['domain'].values
 if __name__ == '__main__':
     start=time.time()
     print("=== Processing ===")
-    with ThreadPoolExecutor(max_workers=20) as p:
+    with ThreadPoolExecutor(max_workers=25) as p:
         p.map(fetch_links,urls[:])
 
     # for url in tqdm(urls[:10]):
