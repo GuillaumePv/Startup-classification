@@ -4,11 +4,29 @@ from path import path_data_github, path_data, path_data_html
 import codecs
 from bs4 import BeautifulSoup
 import re
+import pandas as pd
+from tqdm import tqdm
 
-files = [f for f in listdir(path_data_html)][:10]
+files = [f for f in listdir(path_data_html)][:]
 # print(files)
 file = files[5]
 print(file)
+
+
+class website_text:
+    """
+    (in construction)
+    class to create analysis of html page
+    """
+    def __init__(self, path):
+        self.texts = self.load_domain(path)
+        print("creation class website")
+
+    def load_domain(self,path):
+        path_file = path
+
+        return path_file
+
 
 def clean_page_text(text):
     try:
@@ -26,15 +44,36 @@ def clean_page_text(text):
         return text
     except MemoryError as e:
         print("Memory error !!!")
-try:
-    f=codecs.open(path_data_html+file, 'r', 'utf-8')
-    soup = BeautifulSoup(f.read(), features="html.parser")
-    text = soup.get_text(separator = ' ')
-    print(text)
-    new_text = clean_page_text(text) # bof le cleaning
 
-    print("=== Text cleaned ===\n")
-    print(new_text)
+try:
+
+    documents = []
+    startups = []
+
+    error = 0
+    for file in tqdm(files):
+        try:
+            f=codecs.open(path_data_html+file, 'r', 'utf-8')
+            soup = BeautifulSoup(f.read(), features="html.parser")
+            text = soup.get_text(separator = ' ')
+            clean_text = clean_page_text(text) # bof le cleaning
+
+            # print("=== Text cleaned ===\n")
+            documents.append(clean_text)
+            startups.append(str(file).split(".html")[0])
+            # print(str(file).split(".html")[0])
+        
+        except UnicodeDecodeError:
+            error += 1
+
+    data = {
+        "startup":startups,
+        "text":documents
+    }
+
+    df = pd.DataFrame(data)
+    df.to_csv('./website_info.csv',index=False)
+    print(f"number of errors: {error}")
 
 
 except MemoryError as e:
