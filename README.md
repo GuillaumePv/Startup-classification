@@ -32,5 +32,5 @@ https://towardsdatascience.com/calculating-document-similarities-using-bert-and-
 
 - Gensim :https://towardsdatascience.com/calculating-document-similarities-using-bert-and-other-models-b2c1a29c9630
 - Sklearn
-- NLPK
+- Nltk
 # Authors

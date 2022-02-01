@@ -26,7 +26,7 @@ df['domain'] = df['domain'].apply(lambda x: "http://www." + str(x))
 def fetch_links(url):
     try:
         r = requests.get(url)
-        filename = path_data + '/output/' +url.split('/')[-1]+'.html'
+        filename = path_data + '/html/' +url.split('/')[-1]+'.html'
 
         with open(filename,'wb') as f:
             f.write(r.content)
