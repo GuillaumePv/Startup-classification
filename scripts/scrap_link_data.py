@@ -14,9 +14,16 @@ import time
 from multiprocessing import Pool, cpu_count
 from concurrent.futures import ThreadPoolExecutor
 
+import os
+import sys
+#adding directory to path
+currentdir = os.path.dirname(os.path.realpath(__file__))
+parentdir = os.path.dirname(currentdir)
+
+sys.path.append(parentdir+"/utils/")
 from path import path_data_github, path_data
 
- # Define an output queue
+# Define an output queue
 # output = Queue()
 print("=== Loading data ===")
 df = pd.read_csv(path_data_github)
