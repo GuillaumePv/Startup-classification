@@ -159,3 +159,6 @@ class website_text_dataset:
         ],axis=0)
 
         return valid_index
+
+    def save_file(self):
+        self.website_info.to_csv(f'{path_data}/website_info_cleaned.csv')
