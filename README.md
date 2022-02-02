@@ -4,11 +4,10 @@ code based on https://github.com/jorgeguzmanecon/measuring-founding-strategy
 
 ## TO-DO
 
-- [ ] check it is in english or not
 - [ ] manage dynamic website
 - [ ] create folder with img and other file
 - [ ] choose characteristics for classify
-- [ ] create structure for project
+- [ ] put comments
 
 ## Ideas
 
@@ -21,9 +20,6 @@ use https://web.archive.org/ to obtain sitemapof each website
 - link to data & models: https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/NRYTAA
 https://towardsdatascience.com/calculating-document-similarities-using-bert-and-other-models-b2c1a29c9630 => BERT model, word2vec
 
- 
-## Articles
-- Initial Coin Offerings: Financing Growth with Cryptocurrency Token Sales
 
 ## Papers
 - https://openreview.net/pdf?id=HkuGJ3kCb
@@ -33,4 +29,5 @@ https://towardsdatascience.com/calculating-document-similarities-using-bert-and-
 - Gensim :https://towardsdatascience.com/calculating-document-similarities-using-bert-and-other-models-b2c1a29c9630
 - Sklearn
 - Nltk
+
 # Authors

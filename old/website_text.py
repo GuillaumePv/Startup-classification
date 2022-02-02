@@ -17,9 +17,11 @@ parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir+"/utils/")
 from path import path_data, path_data_html
 
-files = [f for f in listdir(path_data_html)][:]
+sys.path.append(parentdir+"/download/")
+from data_reader import data_reader
 
-class website_text:
+
+class website_text_dataset:
     """
     (in construction)
     class to create analysis of html page
@@ -140,7 +142,6 @@ def add_is_valid_text(website_info: pd.DataFrame):
     website_info.at[np.any(invalid_conditions, axis=0), 'is_valid_website'] = False
 
     return website_info
-    print("function for valid text")
 
 
 def prep(website_info: pd.DataFrame):
@@ -184,7 +185,7 @@ try:
     lang = []
     error = 0
     no_en = 0
-    for file in tqdm(files):
+    for file in tqdm(data_reader.read_html_files()):
         try:
             f = codecs.open(path_data_html + file, 'r', 'utf-8')
             soup = BeautifulSoup(f.read(), features="html.parser")
