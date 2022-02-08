@@ -11,6 +11,6 @@ if "MBP-de-admin" in computer_name or "MacBook-Pro-de-admin" in computer_name or
 
 else:
     # print("VM")
-    path_data = "Z:/"
-    path_data_github = "Z:/projects/ai-specialization/data/github_org_accounts.csv"
-    path_data_html = "Z:/projects/ai-specialization/html"
+    path_data = "S:/projects/ai-specialization/data/"
+    path_data_github = "S:/projects/ai-specialization/data/github_org_accounts.csv"
+    path_data_html = path_data + 'html/'

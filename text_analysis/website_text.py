@@ -74,3 +74,5 @@ class website_text:
             print("Memory error !!!")
 
 
+if __name__ == "__main__":
+    print("main file")

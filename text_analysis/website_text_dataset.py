@@ -1,12 +1,11 @@
-from os import listdir
-import codecs
-from bs4 import BeautifulSoup
-import re
+from asyncio.base_subprocess import WriteSubprocessPipeProto
 import pandas as pd
 from tqdm import tqdm
 
 import numpy as np
 from langdetect import detect, LangDetectException
+
+
 
 import os
 import sys
@@ -27,7 +26,7 @@ class website_text_dataset:
     class to create analysis of html page
     """
 
-    def __init__(self, path):
+    def __init__(self):
         self.website_info = data_reader.read_text_dataset()
     
 
@@ -99,6 +98,7 @@ class website_text_dataset:
             website_info.text.str.contains('This Web site is currently under'),
             website_info.text.str.contains('This domain name was recently'),
             website_info.text.str.contains('This page is parked free'),
+            website_info.text.str.contains('turn JavaScript'),
             website_info.text.str.match('^Microsoft VBScript runtime error'),
             website_info.text.str.match('^WebFusion'),
             website_info.text.str.match('^Register domain names'),
@@ -152,6 +152,21 @@ class website_text_dataset:
 
         return website_info
 
+    def prep(self, website_info: pd.DataFrame):
+        # it takes few minutes to detect language
+        print("Detecting language.")
+        website_info['lang'] = website_info.text.apply(website_text_dataset.detect_lang)
+        print("Done.")
+
+        print("Identify invalid website.")
+        website_info = self.add_is_valid_text(website_info)
+        print("Done")
+
+        print("Identify duplicate websites")
+        website_info['is_duplicated'] = website_info.duplicated()
+        print("Done")
+        return website_info
+
     def get_valid_index(website_info: pd.DataFrame):
         valid_index = np.all([
             website_info.is_valid_website == True,
@@ -162,3 +177,9 @@ class website_text_dataset:
 
     def save_file(self):
         self.website_info.to_csv(f'{path_data}/website_info_cleaned.csv')
+
+if __name__ == "__main__":
+    website_text = website_text_dataset()
+    website_text.website_info = website_text.prep(website_text.website_info)
+    idx = website_text_dataset.get_valid_index(website_text.website_info)
+    website_text_cleaned = website_text.website_info.loc[idx]
