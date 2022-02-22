@@ -23,6 +23,10 @@ from path import path_data_github, path_data, path_data_html
 
 class data_reader:
 
+    def __init__(self):
+        self.train_dataset = pd.read_excel(path_data+"Β2Β_B2C.xlsx")
+        self.possible_website = pd.read_csv(path_data+"github_org_accounts.csv")
+        self.scrapped_website = [f for f in listdir(path_data_html)][:]
     ########################
     ## Download html page ##
     ########################
@@ -72,3 +76,10 @@ class data_reader:
         df = pd.read_csv(f'{path_data}/website_info.csv')
         return df
            
+
+if __name__ == "__main__":
+    data = data_reader()
+    print(data.train_dataset)
+    print(len(data.scrapped_website))
+    print("===========")
+   

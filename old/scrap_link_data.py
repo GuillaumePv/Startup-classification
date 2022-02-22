@@ -25,9 +25,7 @@ from path import path_data_github, path_data
 
 # Define an output queue
 # output = Queue()
-print("=== Loading data ===")
-df = pd.read_csv(path_data_github)
-df['domain'] = df['domain'].apply(lambda x: "http://www." + str(x))
+
 
 # list_problem_link = []
 def fetch_links(url):
@@ -46,20 +44,45 @@ def fetch_links(url):
 
     print('.',end="",flush=True)
 
-urls = df['domain'].values
+
 
 
 
 if __name__ == '__main__':
-    start=time.time()
-    print("=== Processing ===")
-    with ThreadPoolExecutor(max_workers=25) as p:
-        p.map(fetch_links,urls[:])
+    print("=== Loading data ===")
+    df = pd.read_csv(path_data_github)
+    df['urls'] = df['domain'].apply(lambda x: "http://www." + str(x))
+    urls = df['urls'].values
+    if  os.path.isfile(path_data+"website_done.txt") == False:
+        f = open(path_data+'website_done.txt','a')
+        f.close()
 
-    # for url in tqdm(urls[:10]):
-    #     fetch_links(url)
+    print("=== processing urls ===")
+    f = open(path_data+'website_done.txt','r')
+    number_line = len(f.readlines())+1
 
-    print("Time Taken: ",str(time.time()-start)) # No optimization: 52sec
+    f.close()
+    urls = urls[number_line:]
+    print("=== Launching algorithms ===")
+    for url in tqdm(urls[:]):
+        f = open(path_data+'website_done.txt','r')
+        if url in f.read():
+            f.close()
+        else:
+            f.close()
+            fetch_links(url)
+            f = open(path_data+'website_done.txt','a')
+            f.write(url+"\n")
+            f.close()
+    # start=time.time()
+    # print("=== Processing ===")
+    # with ThreadPoolExecutor(max_workers=25) as p:
+    #     p.map(fetch_links,urls[:])
+
+    # # for url in tqdm(urls[:10]):
+    # #     fetch_links(url)
+
+    # print("Time Taken: ",str(time.time()-start)) # No optimization: 52sec
 # processes=[Process(target=fetch_links,args=(urls,)) for url in tqdm(urls)]
 
 #     # Run processes

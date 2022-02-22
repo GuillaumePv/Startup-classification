@@ -53,6 +53,8 @@ class website_text_dataset:
             return lang
         except LangDetectException:
             return "exception"
+        except TypeError:
+            return "exception"
 
     ## Detection invalid website => Dataframe ##
     def add_is_valid_text(self, website_info: pd.DataFrame):
@@ -63,73 +65,73 @@ class website_text_dataset:
 
         invalid_conditions = [
             bad_domain,
-            website_info.text.str.contains('Internal Server'),
-            website_info.text.str.contains('BuyDomains.com'),
-            website_info.text.str.contains('This Web page is parked for FREE'),
+            website_info.text.str.contains('Internal Server', na=False),
+            website_info.text.str.contains('BuyDomains.com', na=False),
+            website_info.text.str.contains('This Web page is parked for FREE', na=False),
             website_info.text.str.contains(
-                'Free business profile for provided by Network Solutions'),
+                'Free business profile for provided by Network Solutions', na=False),
             website_info.text.str.contains(
-                'The Sponsored Listings displayed above are served automatically'),
-            website_info.text.str.contains('Apache'),
-            website_info.text.str.contains('website is for sale'),
-            website_info.text.str.contains('This Web site coming soon'),
+                'The Sponsored Listings displayed above are served automatically', na=False),
+            website_info.text.str.contains('Apache', na=False),
+            website_info.text.str.contains('website is for sale', na=False),
+            website_info.text.str.contains('This Web site coming soon', na=False),
             website_info.text.str.contains(
-                'Welcome to the new website! Our site has been recently created'),
-            website_info.text.str.match('^Wayback Machine'),
+                'Welcome to the new website! Our site has been recently created', na=False),
+            website_info.text.str.match('^Wayback Machine', na=False),
             website_info.text.str.match(
-                'Wayback Machine See what s new with book lending'),
-            website_info.text.str.match('^AVAILABLE NOT FOUND'),
-            website_info.text.str.match('^DefaultHomePage'),
+                'Wayback Machine See what s new with book lending', na=False),
+            website_info.text.str.match('^AVAILABLE NOT FOUND', na=False),
+            website_info.text.str.match('^DefaultHomePage', na=False),
             website_info.text.str.match(
-                '^I?n?t?ernet Archive: Scheduled Mantenance'),
-            website_info.text.str.match('^The page cannot be found'),
-            website_info.text.str.match('^503'),
-            website_info.text.str.match('^5?0?3 Service Unavailable'),
-            website_info.text.str.lower().str.match('domain down'),
-            website_info.text.str.match('^Too Many Requests'),
-            website_info.text.str.match('^Your browser does not support'),
-            website_info.text.str.match('^New Server for COMPANYNAME'),
-            website_info.text.str.contains('this page is parked FREE'),
-            website_info.text.str.contains('domain name was recently registered'),
-            website_info.text.str.contains('placeholder for domain'),
-            website_info.text.str.contains('xtremedata.com  : Low cost'),
-            website_info.text.str.lower().str.contains('domain name registration'),
-            website_info.text.str.contains('Under Construction'),
-            website_info.text.str.contains('This Web site is currently under'),
-            website_info.text.str.contains('This domain name was recently'),
-            website_info.text.str.contains('This page is parked free'),
-            website_info.text.str.contains('turn JavaScript'),
-            website_info.text.str.match('^Microsoft VBScript runtime error'),
-            website_info.text.str.match('^WebFusion'),
-            website_info.text.str.match('^Register domain names'),
-            website_info.text.str.match('^Moved This page has moved'),
-            website_info.text.str.match('^Coming Soon'),
-            website_info.text.str.contains('Site (is )?Temporarily Unavailable'),
-            website_info.text.str.match('^Under Construction'),
-            website_info.text.str.match('^cPanel'),
-            website_info.text.str.match('^Authorization Required'),
+                '^I?n?t?ernet Archive: Scheduled Mantenance', na=False),
+            website_info.text.str.match('^The page cannot be found', na=False),
+            website_info.text.str.match('^503', na=False),
+            website_info.text.str.match('^5?0?3 Service Unavailable', na=False),
+            website_info.text.str.lower().str.match('domain down', na=False),
+            website_info.text.str.match('^Too Many Requests', na=False),
+            website_info.text.str.match('^Your browser does not support', na=False),
+            website_info.text.str.match('^New Server for COMPANYNAME', na=False),
+            website_info.text.str.contains('this page is parked FREE', na=False),
+            website_info.text.str.contains('domain name was recently registered', na=False),
+            website_info.text.str.contains('placeholder for domain', na=False),
+            website_info.text.str.contains('xtremedata.com  : Low cost', na=False),
+            website_info.text.str.lower().str.contains('domain name registration', na=False),
+            website_info.text.str.contains('Under Construction', na=False),
+            website_info.text.str.contains('This Web site is currently under', na=False),
+            website_info.text.str.contains('This domain name was recently', na=False),
+            website_info.text.str.contains('This page is parked free', na=False),
+            website_info.text.str.contains('turn JavaScript', na=False),
+            website_info.text.str.match('^Microsoft VBScript runtime error', na=False),
+            website_info.text.str.match('^WebFusion', na=False),
+            website_info.text.str.match('^Register domain names', na=False),
+            website_info.text.str.match('^Moved This page has moved', na=False),
+            website_info.text.str.match('^Coming Soon', na=False),
+            website_info.text.str.match('Site (is )?Temporarily Unavailable', na=False),
+            website_info.text.str.match('^Under Construction', na=False),
+            website_info.text.str.match('^cPanel', na=False),
+            website_info.text.str.match('^Authorization Required', na=False),
             website_info.text.str.match(
-                '^Top Web Search Directory Top Web Searches'),
-            website_info.text.str.match('^Web Searches'),
-            website_info.text.str.match('^Web Hosting'),
+                '^Top Web Search Directory Top Web Searches', na=False),
+            website_info.text.str.match('^Web Searches', na=False),
+            website_info.text.str.match('^Web Hosting', na=False),
             website_info.text.str.match(
-                '^Search Directory Page Sponsored Listing'),
-            website_info.text.str.match('^coming soon'),
+                '^Search Directory Page Sponsored Listing', na=False),
+            website_info.text.str.match('^coming soon', na=False),
             website_info.text.str.match(
-                'This site is the default web server site'),
-            website_info.text.str.match('DF-1.4 %���� 0 obj< '),
-            website_info.text.str.match('This page uses frames, but your brow'),
-            website_info.text.str.match('U N D E R C O N S T R U C T I O N'),
+                'This site is the default web server site', na=False),
+            website_info.text.str.match('DF-1.4 %���� 0 obj< ', na=False),
+            website_info.text.str.match('This page uses frames, but your brow', na=False),
+            website_info.text.str.match('U N D E R C O N S T R U C T I O N', na=False),
             website_info.text.str.match(
-                'We recommend you upgrade your browser to one of below free alternatives'
+                'We recommend you upgrade your browser to one of below free alternatives', na=False
             ),
-            website_info.text.str.match('enable JavaScript'),
-            website_info.text.str.lower().str.match('under construction'),
+            website_info.text.str.match('enable JavaScript', na=False),
+            website_info.text.str.lower().str.match('under construction', na=False),
             website_info.text.str.match(
-                'Page cannot be Please contact your service provider for more'),
-            website_info.text.str.match('^A WordPress Site'),
-            website_info.text.str.match('^Related Searches: Related Searches'),
-            website_info.text.str.match('^Welcome to IIS'),
+                'Page cannot be Please contact your service provider for more', na=False),
+            website_info.text.str.match('^A WordPress Site', na=False),
+            website_info.text.str.match('^Related Searches: Related Searches', na=False),
+            website_info.text.str.match('^Welcome to IIS', na=False),
 
             ### Language
             website_info.lang != 'en'
@@ -180,6 +182,7 @@ class website_text_dataset:
 
 if __name__ == "__main__":
     website_text = website_text_dataset()
-    website_text.website_info = website_text.prep(website_text.website_info)
-    idx = website_text_dataset.get_valid_index(website_text.website_info)
-    website_text_cleaned = website_text.website_info.loc[idx]
+    df = website_text.prep(website_text.website_info[:])
+    idx = website_text_dataset.get_valid_index(df)
+    website_text_cleaned = df.loc[idx]
+    website_text_cleaned.to_csv(f'{path_data}/website_info_cleaned.csv')

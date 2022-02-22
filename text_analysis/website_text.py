@@ -22,36 +22,59 @@ from path import path_data, path_data_html
 sys.path.append(parentdir+"/download/")
 from data_reader import data_reader
 
-class website_text:
+data = data_reader()
+class WebsiteText:
 
     def __init__(self):
-        self.files = data_reader.read_html_files()
+        self.dirs = data.scrapped_website
 
     def create_website_text(self):
+        if os.path.isfile(path_data+"wesbite_not_working.txt"):
+            os.remove(path_data+"wesbite_not_working.txt")
+        else:
+            f = open(path_data+"wesbite_not_working.txt","w", encoding="utf-8")
+            f.close()
         try:
 
             documents = []
             startups = []
             lang = []
             error = 0
+            no_file = 0
             no_en = 0
-            for file in tqdm(self.files):
-                try:
-                    f = codecs.open(path_data_html + file, 'r', 'utf-8')
-                    soup = BeautifulSoup(f.read(), features="html.parser")
-                    text = soup.get_text(separator=' ')
-                    clean_text = self.clean_page_text(text)  # bof le cleaning
-                    documents.append(clean_text)
-                    startups.append(str(file).split(".html")[0])
+            for dir in tqdm(self.dirs[:]):
+                list_file = os.listdir(path_data_html+dir)
+                if len(list_file) > 0:
+                    try:
+                        f = codecs.open(path_data_html+dir+f'/{list_file[0]}', 'r', 'utf-8')
+                        soup = BeautifulSoup(f.read(), features="html.parser")
+                        text = soup.get_text(separator=' ')
+                        clean_text = self.clean_page_text(text)  # bof le cleaning
+                        documents.append(clean_text)
+                        startups.append(str(list_file[0]).split(".html")[0])
 
-                except UnicodeDecodeError:
-                    error += 1
-
+                    except UnicodeDecodeError:
+                        error += 1
+                        f = open(path_data+"wesbite_not_working.txt","a",encoding="utf-8")
+                        f.write(dir+", UnicodeDecodeError"+"\n")
+                        f.close()
+                    
+                    except PermissionError:
+                        error += 1
+                        f = open(path_data+"wesbite_not_working.txt","a",encoding="utf-8")
+                        f.write(dir+", PermissionError"+"\n")
+                        f.close()
+                else:
+                    no_file += 1
+                    f = open(path_data+"wesbite_not_working.txt","a",encoding="utf-8")
+                    f.write(dir+", no_file"+"\n")
+                    f.close()
             data = {"website": startups, "text": documents}
 
             df = pd.DataFrame(data)
             df.to_csv(f'{path_data}/website_info.csv', index=False)
             print(f"number of errors: {error}")
+            print(f"number of not working website: {no_file}")
 
         except MemoryError as e:
             print("Memory error !!!")
@@ -75,4 +98,5 @@ class website_text:
 
 
 if __name__ == "__main__":
-    print("main file")
+    website_text = WebsiteText()
+    website_text.create_website_text()
