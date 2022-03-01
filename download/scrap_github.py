@@ -84,9 +84,8 @@ if __name__ == '__main__':
     # print(df_test.head(5))
 
     df_test = df_test.dropna()
-    print(df_test.head(5))
+
     df_test = df_test.iloc[number_done:,:]
-    print(df_test.head(5))
     
     start=time.time()
     print("=== Processing ===")
