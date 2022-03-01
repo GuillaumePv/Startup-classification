@@ -13,4 +13,5 @@ else:
     path_data = "S:/projects/ai-specialization/data/"
     path_data_github = "S:/projects/ai-specialization/data/github_org_accounts.csv"
     path_data_html = path_data + 'html/'
+    path_data_html_selenium = path_data + 'html_selenium/'
     path_github_folder = "S:/data/github/"
