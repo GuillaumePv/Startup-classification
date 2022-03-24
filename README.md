@@ -8,6 +8,7 @@ code based on https://github.com/jorgeguzmanecon/measuring-founding-strategy
 - [ ] create folder with img and other file
 - [ ] choose characteristics for classify
 - [ ] put comments
+- [ ] create class for downloader
 
 ## Ideas
 

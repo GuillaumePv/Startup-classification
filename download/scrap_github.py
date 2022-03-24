@@ -5,7 +5,7 @@ from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor
 from joblib import Parallel, delayed
 import multiprocessing
-
+import time
 import time
 
 import os
@@ -41,29 +41,41 @@ def scrap_readme(repository, login):
     try:
         content = str(r.content, encoding="utf-8")
         if content == "429: Too Many Requests":
-            os._exit(0)
+            print("=== scraper blocked ====")
+            time.sleep(60)
+                # os._exit(0)
     except Exception:
         content = str(r.content)
         if content == "429: Too Many Requests":
-            os._exit(0)
+            print("=== scraper blocked ====")
+            time.sleep(60)
+                # os._exit(0)
     if 'Not Found' in content:
         url = f"https://raw.githubusercontent.com/{repo_url}/main/README.md"
         r = requests.get(url)
         try:
             content = str(r.content, encoding="utf-8")
             if content == "429: Too Many Requests":
-                os._exit(0)
+                print("=== scraper blocked ====")
+                time.sleep(60)
+                # os._exit(0)
             f = open(path_github_folder+"readme/"+f"{filename}.txt","w+",encoding="utf-8")
             f.write(content)
             f.close()
         except Exception:
             content = str(r.content)
             if content == "429: Too Many Requests":
-                os._exit(0)
-            f = open(path_github_folder+"readme/"+f"{filename}.txt","w+",encoding="utf-8")
-            f.write(content)
-            f.close()
-            number_read_me += 1
+                print("=== scraper blocked ====")
+                time.sleep(60)
+                # os._exit(0)
+            try:
+                f = open(path_github_folder+"readme/"+f"{filename}.txt","w+",encoding="utf-8")
+                f.write(content)
+                f.close()
+                number_read_me += 1
+            except FileNotFoundError:
+                print("file not found")
+                pass
     else:
         f = open(path_github_folder+"readme/"+f"{filename}.txt","w+",encoding="utf-8")
         f.write(content)
@@ -101,7 +113,9 @@ if __name__ == '__main__':
     #         print(repo)
     #         break
     # array = [(, i) for i in range(len(df_final))]
-    Parallel(n_jobs=num_cores)(delayed(scrap_readme)(list_repo[i], list_login[i]) for i in tqdm(range(len(list_repo))))
+    for i in tqdm(range(len(list_repo[number_done:]))):
+        scrap_readme(list_repo[i], list_repo[i])
+    # Parallel(n_jobs=num_cores)(delayed(scrap_readme)(list_repo[i], list_login[i]) for i in tqdm(range(len(list_repo))))
     # with ThreadPoolExecutor(max_workers=30) as p:
     #     p.map(scrap_readme,list_repo[number_done:],list_login[number_done:])
 
