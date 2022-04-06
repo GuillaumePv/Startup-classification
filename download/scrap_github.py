@@ -41,9 +41,9 @@ def scrap_readme(repository, login):
             os.remove(path_github_folder+"readme/"+f"{filename}.txt")
 
         repo_url = login+"/"+repository
-        f = open("./download/repo_done.txt","a")
-        f.write(repo_url+",\n")
-        f.close()
+        # f = open("./download/repo_done.txt","a")
+        # f.write(repo_url+",\n")
+        # f.close()
         url = f"https://raw.githubusercontent.com/{repo_url}/master/README.md"
         r = requests.get(url)
 
