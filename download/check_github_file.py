@@ -4,6 +4,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import os
 import sys
+import time
 #adding directory to path
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
@@ -18,10 +19,10 @@ class Github:
         self.read_dir = read_dir
         self.df_links = None
         self.read_links()
-        pass
     
     def read_links(self):
         self.df_links = pd.read_csv(self.read_dir + "internal_repo_actitivity_detail.csv")
+        self.df_links = self.df_links.dropna()
 
     def check_file(self):
         print("=== It takes time to launch ===")
@@ -69,26 +70,41 @@ class Github:
         # check for file done
         pass
     def scrap(self):
-        url_base = "https://github.com"
-        re = requests.get("https://github.com/gibbed/SteamAchievementManager")
-        soup = BeautifulSoup(re.text)
 
-        links = soup.find_all("a")
-        for link in links:
-            if "README" in link.text:
-                if "master" in link['href'] or "main" in link['href']:
-                    re = requests.get(url_base + link['href'].replace("blob",'raw'))
-                    print(re.text)
-        # for div in soup.find_all("div"):
-        #     print(div.text)
-        # print(re.text)
-# 128845 good
+        df = pd.read_csv("./download/github_done.txt",names=["textfile","login","repo","unamed"])
+        del df["unamed"]
+        
+        self.df_links["repo_cleaned"] = self.df_links['repo'].apply(lambda x: x.split("/")[1] if len(x.split("/")) == 2 else x)
+        list_repo = self.df_links["repo_cleaned"].values
+        list_login = self.df_links["login"].values
+
+        def read_me(login, repo, filename):
+            
+            url_base = "https://github.com"
+            
+            re = requests.get(f"https://github.com/{login}/{repo}")
+            soup = BeautifulSoup(re.text)
+
+            links = soup.find_all("a")
+            for link in links:
+                if "README" in link.text:
+                    if "master" in link['href'] or "main" in link['href']:
+                        re = requests.get(url_base + link['href'].replace("blob",'raw'))
+                        if os.path.exists(path_github_folder+"readme/"+f"{filename}.txt"):
+                            os.remove(path_github_folder+"readme/"+f"{filename}.txt")
+                        f = open(path_github_folder+"readme/"+f"{filename}.txt","w+",encoding="utf-8")
+                        f.write(re.text)
+                        f.close()
+
+        for i in tqdm(range(len(list_repo[:]))):
+            filename = list_login[i] + "_" + list_repo[i]
+            if filename in df["textfile"]:
+                pass
+            else:
+                read_me(list_login[i], list_repo[i], filename)
+
+        
+# 861990 good
 github = Github(path_github_folder+"readme/",path_github_folder)
 github.check_file()
-# f_end = open("./download/github_not_found.txt",encoding="utf-8")
-# print("Number of error: ",len(f_end.readlines()))
 
-# f_end = open("./download/github_too_many_requests.txt",encoding="utf-8")
-# print("Number of error: ",len(f_end.readlines()))
-# number_done = len(github_done)
-# print(f"number done: {number_done}")

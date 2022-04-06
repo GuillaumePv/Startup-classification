@@ -20,6 +20,8 @@ from path import path_github_folder
 """
 400: Invalid request
 """
+df = pd.read_csv("./download/github_done.txt",names=["textfile","login","repo","unamed"])
+del df["unamed"]
 def scrap_readme(repository, login):
     number_read_me = 0
     
@@ -31,74 +33,82 @@ def scrap_readme(repository, login):
 
     filename = login+"_"+repository
 
-    repo_url = login+"/"+repository
-    f = open("./download/repo_done.txt","a")
-    f.write(repo_url+",\n")
-    f.close()
-    url = f"https://raw.githubusercontent.com/{repo_url}/master/README.md"
-    r = requests.get(url)
+    
+    if filename in df["textfile"].values:
+        pass
+    else:
+        if os.path.exists(path_github_folder+"readme/"+f"{filename}.txt"):
+            os.remove(path_github_folder+"readme/"+f"{filename}.txt")
 
-    try:
-        content = str(r.content, encoding="utf-8")
-        if content == "429: Too Many Requests":
-            print("=== scraper blocked ====")
-            time.sleep(60)
-                # os._exit(0)
-    except Exception:
-        content = str(r.content)
-        if content == "429: Too Many Requests":
-            print("=== scraper blocked ====")
-            time.sleep(60)
-                # os._exit(0)
-    if 'Not Found' in content:
-        url = f"https://raw.githubusercontent.com/{repo_url}/main/README.md"
+        repo_url = login+"/"+repository
+        f = open("./download/repo_done.txt","a")
+        f.write(repo_url+",\n")
+        f.close()
+        url = f"https://raw.githubusercontent.com/{repo_url}/master/README.md"
         r = requests.get(url)
+
         try:
             content = str(r.content, encoding="utf-8")
             if content == "429: Too Many Requests":
                 print("=== scraper blocked ====")
                 time.sleep(60)
-                # os._exit(0)
-            f = open(path_github_folder+"readme/"+f"{filename}.txt","w+",encoding="utf-8")
-            f.write(content)
-            f.close()
+                    # os._exit(0)
         except Exception:
             content = str(r.content)
             if content == "429: Too Many Requests":
                 print("=== scraper blocked ====")
                 time.sleep(60)
-                # os._exit(0)
+                    # os._exit(0)
+        if 'Not Found' in content:
+            url = f"https://raw.githubusercontent.com/{repo_url}/main/README.md"
+            r = requests.get(url)
             try:
+                content = str(r.content, encoding="utf-8")
+                if content == "429: Too Many Requests":
+                    print("=== scraper blocked ====")
+                    time.sleep(60)
+                    # os._exit(0)
                 f = open(path_github_folder+"readme/"+f"{filename}.txt","w+",encoding="utf-8")
                 f.write(content)
                 f.close()
-                number_read_me += 1
-            except FileNotFoundError:
-                print("file not found")
-                pass
-    else:
-        f = open(path_github_folder+"readme/"+f"{filename}.txt","w+",encoding="utf-8")
-        f.write(content)
-        f.close()
-        number_read_me += 1
+            except Exception:
+                content = str(r.content)
+                if content == "429: Too Many Requests":
+                    print("=== scraper blocked ====")
+                    time.sleep(60)
+                    # os._exit(0)
+                try:
+                    f = open(path_github_folder+"readme/"+f"{filename}.txt","w+",encoding="utf-8")
+                    f.write(content)
+                    f.close()
+                    number_read_me += 1
+                except FileNotFoundError:
+                    print("file not found")
+                    pass
+        else:
+            f = open(path_github_folder+"readme/"+f"{filename}.txt","w+",encoding="utf-8")
+            f.write(content)
+            f.close()
+            number_read_me += 1
     
     # print('.',end="",flush=True)
 
 if __name__ == '__main__':
+    # number_done = int(input("how much github links done ?"))
     num_cores = multiprocessing.cpu_count()
     print(f"== number of CPU: {num_cores} ==")
     print("=== Loading data ===")
     
-    github_done = os.listdir(path_github_folder+"readme/")
-    number_done = len(github_done)
-    print(f"number done: {number_done}")
+    # github_done = os.listdir(path_github_folder+"readme/")
+    # number_done = len(github_done)
+    # print(f"number done: {number_done}")
     df_test = pd.read_csv(path_github_folder+"internal_repo_actitivity_detail.csv")
     # print(df_test.head(5))
 
     df_test = df_test.dropna()
-
-    df_test = df_test.iloc[number_done:,:]
-    
+    print(df_test.shape)
+    df_test = df_test.iloc[899393+912168:,:]
+    # 899393
     start=time.time()
     print("=== Processing ===")
 
@@ -113,8 +123,8 @@ if __name__ == '__main__':
     #         print(repo)
     #         break
     # array = [(, i) for i in range(len(df_final))]
-    for i in tqdm(range(len(list_repo[number_done:]))):
-        scrap_readme(list_repo[i], list_repo[i])
+    for i in tqdm(range(len(list_repo[:]))):
+        scrap_readme(list_repo[i], list_login[i])
     # Parallel(n_jobs=num_cores)(delayed(scrap_readme)(list_repo[i], list_login[i]) for i in tqdm(range(len(list_repo))))
     # with ThreadPoolExecutor(max_workers=30) as p:
     #     p.map(scrap_readme,list_repo[number_done:],list_login[number_done:])
