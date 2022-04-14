@@ -3,7 +3,7 @@ import os
 import numpy as np, pandas as pd
 from string import punctuation
 from sklearn.metrics import accuracy_score
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.utils import resample
 
@@ -81,7 +81,7 @@ for i in range(len(df.loc[:, ['classification']])):
     y.append(df.iloc[i]['classification'])
 
 X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
-model = LogisticRegression(class_weight='balanced', multi_class='multinomial', C=1e7)
+model = RandomForestClassifier(n_estimators = 10, criterion = 'entropy', random_state = 42)
 model.fit(X_train, y_train)
 yPrediction = model.predict(X_test)
 print(yPrediction)
