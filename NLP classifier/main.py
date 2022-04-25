@@ -1,10 +1,11 @@
 import nltk
 import re
 import pandas as pd
+import numpy as np
 from string import punctuation
 from sklearn.metrics import accuracy_score
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.utils import resample
 
 # glove
@@ -99,7 +100,25 @@ for i in range(len(df.loc[:, ['classification']])):
     y.append(df.iloc[i]['classification'])
 
 X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
-model = RandomForestClassifier(n_estimators=50, criterion='entropy', random_state=42)
-model.fit(X_train, y_train)
-yPrediction = model.predict(X_test)
+model = RandomForestClassifier()
+
+
+n_estimators = [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)]
+
+max_features = ['auto', 'sqrt']
+max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
+max_depth.append(None)
+min_samples_split = [2, 5, 10]
+min_samples_leaf = [1, 2, 4]
+bootstrap = [True, False]
+random_grid = {'n_estimators': n_estimators,
+               'max_features': max_features,
+               'max_depth': max_depth,
+               'min_samples_split': min_samples_split,
+               'min_samples_leaf': min_samples_leaf,
+               'bootstrap': bootstrap}
+
+model_random = RandomizedSearchCV(estimator = model, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=42, n_jobs = -1)
+model_random.fit(X_train, y_train)
+yPrediction = model_random.predict(X_test)
 print(accuracy_score(y_test, yPrediction) * 100)
