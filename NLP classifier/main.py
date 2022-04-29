@@ -3,10 +3,14 @@ import re
 import pandas as pd
 import numpy as np
 from string import punctuation
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.utils import resample
+import joblib
+
+
+pd.set_option('display.max_columns', None)
 
 # glove
 glovebath = 'glove.6B.50d.txt'
@@ -26,12 +30,13 @@ def load_data():
     df.columns = ['site', 'classification', 'text']
     df['classification'] = df['classification'].replace(['OPEN'], 'OTHER')
     df['classification'] = df['classification'].replace(['B2C/B2B'], 'B2C')
-
-    B2B = df[df["classification"] == "B2B"]
-    B2C = df[df["classification"] == "B2C"]
-    OTHER = df[df["classification"] == "OTHER"]
+    df.loc[df["classification"] == "B2B", "classification"] = 0
+    df.loc[df["classification"] == "B2C", "classification"] = 1
+    df.loc[df["classification"] == "OTHER", "classification"] = 2
+    B2B = df[df["classification"] == 0]
+    B2C = df[df["classification"] == 1]
+    OTHER = df[df["classification"] == 2]
     return B2B, B2C, OTHER
-
 
 B2B, B2C, OTHER = load_data()
 
@@ -67,8 +72,6 @@ def clean_numbers(x):
 
 
 for i in range(len(df.loc[:, ['text']])):
-    x = removepunc(df.iloc[i]['text'])
-    x = clean_numbers(df.iloc[i]['text'])
     x = df.iloc[i]['text'].lower()
     withoutpunc.append([x])
 
@@ -103,6 +106,7 @@ X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_
 model = RandomForestClassifier()
 
 
+
 n_estimators = [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)]
 
 max_features = ['auto', 'sqrt']
@@ -118,7 +122,12 @@ random_grid = {'n_estimators': n_estimators,
                'min_samples_leaf': min_samples_leaf,
                'bootstrap': bootstrap}
 
-model_random = RandomizedSearchCV(estimator = model, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=42, n_jobs = -1)
+
+model_random = RandomizedSearchCV(estimator = model, param_distributions = random_grid, n_iter = 50, cv = 3, verbose=3, random_state=0, n_jobs = -1)
 model_random.fit(X_train, y_train)
 yPrediction = model_random.predict(X_test)
-print(accuracy_score(y_test, yPrediction) * 100)
+print(classification_report(y_test, yPrediction))
+print(confusion_matrix(y_test, yPrediction))
+
+filename = 'model/RFword2vec_model.sav'
+joblib.dump(model_random, open(filename, 'wb'))
