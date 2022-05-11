@@ -1,4 +1,6 @@
 import nltk
+nltk.download('punkt')
+
 import re
 import pandas as pd
 import numpy as np
@@ -8,20 +10,25 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.utils import resample
 import joblib
+from tqdm import tqdm
 
 
 pd.set_option('display.max_columns', None)
 
-# glove
 glovebath = 'glove.6B.50d.txt'
-with open(glovebath, 'r', encoding="utf8") as f:
-    words = set()
-    word2vector = {}
-    for line in f:
-        line_ = line.strip()
-        words_Vec = line_.split()
-        words.add(words_Vec[0])
-        word2vector[words_Vec[0]] = list(map(float, words_Vec[1:]))
+# glove
+try:
+    with open(glovebath, 'r', encoding="utf8") as f:
+        words = set()
+        word2vector = {}
+        for line in f:
+            line_ = line.strip()
+            words_Vec = line_.split()
+            words.add(words_Vec[0])
+            word2vector[words_Vec[0]] = list(map(float, words_Vec[1:]))
+except FileNotFoundError:
+    print("You need to download glove.6B.50d.txt on http://nlp.stanford.edu/data/glove.6B.zip.")
+    print("And put glove.6B.50d.txt on the folder NLP Classifier.")
 
 
 def load_data():
@@ -36,6 +43,7 @@ def load_data():
     B2B = df[df["classification"] == 0]
     B2C = df[df["classification"] == 1]
     OTHER = df[df["classification"] == 2]
+    
     return B2B, B2C, OTHER
 
 B2B, B2C, OTHER = load_data()
@@ -75,11 +83,11 @@ for i in range(len(df.loc[:, ['text']])):
     x = df.iloc[i]['text'].lower()
     withoutpunc.append([x])
 
-
+print("=== beging embedding ===")
 def emmbedding(type, method):
     result = []
     wordsOfDoc = []
-    for i in range(len(type)):
+    for i in tqdm(range(len(type))):
         # print(type[i])
         tmp = []
         for j in type[i]:

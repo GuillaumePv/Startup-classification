@@ -107,7 +107,7 @@ if __name__ == '__main__':
 
     df_test = df_test.dropna()
     print(df_test.shape)
-    df_test = df_test.iloc[899393+912168:,:]
+    df_test = df_test.iloc[379495:,:]
     # 899393
     start=time.time()
     print("=== Processing ===")
