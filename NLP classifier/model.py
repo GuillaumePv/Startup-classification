@@ -134,22 +134,26 @@ class Model:
         x = self.prepare_x(df)
         # create method to predict group of the text
         model = joblib.load('model/RFword2vec_model.sav')
-        return model.predict(x)
+        pred_proba = model.predict_proba(x)
+        best_proba = []
+        for pred in pred_proba:
+            best_proba.append(np.max(pred))
+        return model.predict(x), best_proba
 
 if __name__ == "__main__":
     par = Params()
     model = Model(par)
     df = pd.read_csv(f"{par.path_dataset}/website_info_cleaned.csv")
+    columns_wanted = ["website","text","classification","classification_proba"]
     print(f"shape of the dataset: {df.shape}")
     print("=== run the model ===")
-    df["classification"] = model.predict(df)
+    result = model.predict(df)
+    
+    df["classification"] = result[0]
+    df["classification_proba"] = result[1]
     df.loc[df["classification"] == 0, "classification"] = "B2B"
     df.loc[df["classification"] == 1, "classification"] = "B2C"
     df.loc[df["classification"] == 2, "classification"] = "OTHER"
     print("=== save data ===")
-    df.to_csv(f"{par.path_dataset}/website_classified.csv",index=False)
-    # class_list = []
-    # for i in tqdm(range(len(df))):
-    #     class_list.append(model.predict(df.loc[i]))
-    # df['class'] = class_list
+    df[columns_wanted].to_csv(f"{par.path_dataset}/website_classified.csv",index=False)
     
