@@ -31,4 +31,7 @@ https://towardsdatascience.com/calculating-document-similarities-using-bert-and-
 - Sklearn
 - Nltk
 
+
+https://www.hbs.edu/ris/Publication%20Files/22-001rev9-30-21_e5960a01-5b10-4aa4-9413-e711e5a2247d.pdf
+- use classification to generate wordcloud
 # Authors
