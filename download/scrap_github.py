@@ -20,6 +20,25 @@ from path import path_github_folder
 """
 400: Invalid request
 """
+
+class ScrapperGithub:
+    def __init__(self,path_df,is_csv=True):
+        if is_csv:
+            self.df = pd.read_csv(path_df)
+        else:
+            self.df = pd.read_excel(path_df)
+
+    def scrap_readme(self):
+        repos = self.df["repo"]
+        text_repos = []
+        for repo in tqdm(repos):
+            url = f"https://raw.githubusercontent.com/{repo}/master/README.md"
+            r = requests.get(url)
+            content = str(r.content, encoding="utf-8")
+            text_repos.append(content)
+
+        self.df["repo_text"] = text_repos
+
 df = pd.read_csv("./download/github_done.txt",names=["textfile","login","repo","unamed"])
 del df["unamed"]
 def scrap_readme(repository, login):
@@ -115,19 +134,9 @@ if __name__ == '__main__':
     df_test["repo_cleaned"] = df_test['repo'].apply(lambda x: x.split("/")[1] if len(x.split("/")) == 2 else x)
     list_repo = df_test["repo_cleaned"].values
     list_login = df_test["login"].values
-    # for repo in  df_test["repo"].values:
-    #     try:
-    #         if len(repo.split("/")) == 2:
-    #             print(repo.split("/")[1])
-    #     except Exception:
-    #         print(repo)
-    #         break
-    # array = [(, i) for i in range(len(df_final))]
+   
     for i in tqdm(range(len(list_repo[:]))):
         scrap_readme(list_repo[i], list_login[i])
-    # Parallel(n_jobs=num_cores)(delayed(scrap_readme)(list_repo[i], list_login[i]) for i in tqdm(range(len(list_repo))))
-    # with ThreadPoolExecutor(max_workers=30) as p:
-    #     p.map(scrap_readme,list_repo[number_done:],list_login[number_done:])
 
     print("Time Taken: ",str(time.time()-start)) # No optimization: 52sec
 

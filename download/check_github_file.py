@@ -36,7 +36,7 @@ class Github:
         list_file = os.listdir(self.save_dir)
         error = 0
         # check file aleardy done
-        def func_check(file,copy_good=False):
+        def func_check(file,copy_good=True):
             f = open(self.save_dir+file, encoding="utf-8")
             bug = False
             for line in f.readlines():
@@ -67,7 +67,7 @@ class Github:
                 f_write.write(file+","+login+","+repo+",\n")
                 f_write.close()
                 if copy_good:
-                    dest_path = f"{path_github_folder}good_readme/{file}"
+                    dest_path = f"{path_github_folder}/good_readme/{file}"
                     shutil.copyfile(self.save_dir+file, dest_path)
 
                 
