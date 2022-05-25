@@ -36,71 +36,71 @@ labelled_df =  labelled_df.rename(columns={"repo_text":"text","type1":"label"})
 
 
 labelled_df.dropna(axis=0, inplace=True, subset=["repo", "text"])
+print(labelled_df.shape)
 labelled_df.reset_index(inplace=True, drop=True)
 
+print({label: len(labelled_df[labelled_df["label"] == label]) for label in labels}) #150 classified website
+
 print("Loading unlabelled data")
-unlabelled_df = pd.read_csv(path_github_folder + "unclassified_new_github.csv").head(100)
+unlabelled_df = pd.read_csv(path_github_folder + "unclassified_new_github.csv").head(50000)
 # unlabelled_df.tail(-100).to_csv("unlabelled.csv")
 unlabelled_df.dropna(axis=0, inplace=True, subset=["repo", "text"])
 unlabelled_df.reset_index(drop=True, inplace=True)
 
-categories = [" ".join(labelled_df[labelled_df["label"] == label]["text"].tolist()) for label in labels]
+print(len(unlabelled_df))
+gc.collect()
 
 print("Fitting CV & TFIDF")
 
-corpus = labelled_df["text"]
+corpus = labelled_df["text"].append(unlabelled_df["text"]).tolist()
 eng = stopwords.words("english")
 
-cv = CountVectorizer(stop_words=eng, min_df=0.05, max_df=0.5)
+cv = CountVectorizer(stop_words=eng, min_df=0.01, max_df=0.1)
 tfidf = TfidfTransformer()
 
-arr = cv.fit_transform(corpus)
+print("Fitting CV")
+labelled_corpus = labelled_df["text"].tolist()
+unlabelled_corpus = unlabelled_df["text"].tolist()
+cv.fit(corpus)
+
+print("Fitting TFIDF")
+arr = cv.transform(labelled_corpus)
 arr = tfidf.fit_transform(arr)
-arr = np.array(arr.todense())
 
-unlabelled_arr = tfidf.transform(cv.transform(unlabelled_df["text"].tolist()))
-unlabelled_arr = np.array(unlabelled_arr.todense())
+print("Transforming")
+unlabelled_arr = tfidf.transform(cv.transform(unlabelled_corpus))
 
-n_components = 75
+print("Dimensionality Reduction")
+n_components = 1000
 svd = TruncatedSVD(n_components=n_components, n_iter=20)
-
-svd.fit(np.vstack((arr, unlabelled_arr)))
+print("Fitting SVD")
+svd.fit(scipy.sparse.vstack((arr, unlabelled_arr)))
 
 explained_variance = np.sum(svd.explained_variance_ratio_)
 print(f"Explained variance with {n_components} components: {explained_variance * 100}%")
 
-X = arr
-Y = np.zeros(shape=(arr.shape[0],))
+with open("others.svd", "wb") as f:
+    pickle.dump(svd, f)
+
+## save svd model and load it
+# svd for 100000 component
+# with open("100000.svd", "rb") as f:
+#     svd = pickle.load(f)
+
+print("Generating Dataset")
+X = svd.transform(arr)
+Y = np.zeros(shape=(X.shape[0],))
 
 for i, row in labelled_df.iterrows():
     label = row["label"]
     if not pd.isna(label):
         Y[i] = labels.index(label)
 
-X_out = unlabelled_arr
+X_out = svd.transform(unlabelled_arr)
+print("Shape X")
+print(X.shape)
 
-print("Train algorithm")
-# min_test, min_train = 20, 50
-# accuracies = []
-# for n_train in tqdm(range(min_train, len(X) - min_test)):
-#     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, train_size=n_train)
-
-#     knn = KNeighborsClassifier(n_neighbors=3)
-#     knn.fit(X_train, Y_train)
-
-#     Y_pred = knn.predict(X_test)
-
-#     # Y_pred = np.hstack([p[:, 1:] for p in Y_pred])
-#     diff = np.where(Y_pred != Y_test, 1, 0)
-#     mistakes = diff.sum()
-#     total = Y_test.size
-#     accuracy = 1. - mistakes / total
-#     accuracies.append(accuracy)
-
-# plt.plot(np.arange(min_train, len(X) - min_test), accuracies, "r-")
-# plt.show()
-
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=75)
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=20)
 classifier = KNeighborsClassifier(n_neighbors=5, weights="distance")
 classifier.fit(X_train, Y_train)
 Y_pred = classifier.predict(X_test)
@@ -117,8 +117,7 @@ Y_proba = knn.predict_proba(X_out)
 Y_pred = np.argmax(Y_proba, axis=1)
 Y_conf = np.max(Y_proba, axis=1)
 
-
-threshold = 0.401
+threshold = 0.0
 selection = Y_conf < threshold
 n_low_confidence = np.count_nonzero(selection) / len(Y_conf)
 print(f"{n_low_confidence * 100}% \"low\" confidence")
@@ -133,5 +132,3 @@ correct = unlabelled_df[np.logical_not(selection)]
 check = unlabelled_df[selection]
 correct.to_csv("correct.csv", index=False)
 check.to_csv("to_check.csv", index=False)
-
-print("Saved")
