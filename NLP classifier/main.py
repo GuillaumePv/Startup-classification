@@ -60,6 +60,7 @@ df_before["classification"].reset_index().groupby("classification").count().sort
        "index").plot(kind="barh", legend=False, 
         ax=ax).grid(axis='x')
 plt.savefig('./graphs/sampling_before_subsample.png')
+plt.close()
 
 B2B_downsample = resample(B2B,
                           replace=True,
@@ -78,6 +79,7 @@ df["classification"].reset_index().groupby("classification").count().sort_values
        "index").plot(kind="barh", legend=False, 
         ax=ax).grid(axis='x')
 plt.savefig('./graphs/sampling_after_subsample.png')
+plt.close()
 
 withoutpunc = []
 
@@ -182,6 +184,7 @@ ax.set(xlabel="Pred", ylabel="True", xticklabels=classes,
        yticklabels=classes, title="Confusion matrix")
 plt.yticks(rotation=0)
 plt.savefig('./graphs/confusion_matrix.png')
+plt.close()
 fig, ax = plt.subplots(nrows=1, ncols=2)
 ## Plot roc
 for i in range(len(classes)):
@@ -212,4 +215,4 @@ ax[1].legend(loc="best")
 ax[1].grid(True)
 plt.tight_layout()
 plt.savefig('./graphs/roc_curve_and_precision_recall_curve.png')
-plt.show()
+plt.close()
