@@ -33,16 +33,17 @@ labels = ["API", "Blockchain", "Compliance", "Data/ML", "Development", "HR", "In
 print("Loading labelled data")
 labelled_df = pd.read_csv(path_github_folder + "external_repo_classification.csv")
 labelled_df =  labelled_df.rename(columns={"repo_text":"text","type1":"label"})
-
+print(labelled_df.shape)
 
 labelled_df.dropna(axis=0, inplace=True, subset=["repo", "text"])
+labelled_df = labelled_df.loc[~pd.isnull(labelled_df[['label']]).any(axis=1)]
 print(labelled_df.shape)
 labelled_df.reset_index(inplace=True, drop=True)
 
 print({label: len(labelled_df[labelled_df["label"] == label]) for label in labels}) #150 classified website
 
 print("Loading unlabelled data")
-unlabelled_df = pd.read_csv(path_github_folder + "unclassified_new_github.csv").head(50000)
+unlabelled_df = pd.read_csv(path_github_folder + "unclassified_new_github.csv")
 # unlabelled_df.tail(-100).to_csv("unlabelled.csv")
 unlabelled_df.dropna(axis=0, inplace=True, subset=["repo", "text"])
 unlabelled_df.reset_index(drop=True, inplace=True)
@@ -71,7 +72,7 @@ print("Transforming")
 unlabelled_arr = tfidf.transform(cv.transform(unlabelled_corpus))
 
 print("Dimensionality Reduction")
-n_components = 1000
+n_components = 400
 svd = TruncatedSVD(n_components=n_components, n_iter=20)
 print("Fitting SVD")
 svd.fit(scipy.sparse.vstack((arr, unlabelled_arr)))
@@ -117,7 +118,7 @@ Y_proba = knn.predict_proba(X_out)
 Y_pred = np.argmax(Y_proba, axis=1)
 Y_conf = np.max(Y_proba, axis=1)
 
-threshold = 0.0
+threshold = 0.401
 selection = Y_conf < threshold
 n_low_confidence = np.count_nonzero(selection) / len(Y_conf)
 print(f"{n_low_confidence * 100}% \"low\" confidence")

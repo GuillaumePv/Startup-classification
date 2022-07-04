@@ -45,10 +45,6 @@ def scrap_readme(repository, login):
     number_read_me = 0
     
     path = path_github_folder+"readme/"+repository+"/"
-    # if os.path.isdir(path):
-    #     pass
-    # else:
-    #     os.makedirs(path)
 
     filename = login+"_"+repository
 
@@ -60,9 +56,6 @@ def scrap_readme(repository, login):
             os.remove(path_github_folder+"readme/"+f"{filename}.txt")
 
         repo_url = login+"/"+repository
-        # f = open("./download/repo_done.txt","a")
-        # f.write(repo_url+",\n")
-        # f.close()
         url = f"https://raw.githubusercontent.com/{repo_url}/master/README.md"
         r = requests.get(url)
 
@@ -109,18 +102,12 @@ def scrap_readme(repository, login):
             f.write(content)
             f.close()
             number_read_me += 1
-    
-    # print('.',end="",flush=True)
 
 if __name__ == '__main__':
-    # number_done = int(input("how much github links done ?"))
     num_cores = multiprocessing.cpu_count()
     print(f"== number of CPU: {num_cores} ==")
     print("=== Loading data ===")
     
-    # github_done = os.listdir(path_github_folder+"readme/")
-    # number_done = len(github_done)
-    # print(f"number done: {number_done}")
     df_test = pd.read_csv(path_github_folder+"internal_repo_actitivity_detail.csv")
     # print(df_test.head(5))
 
