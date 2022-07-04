@@ -1,5 +1,7 @@
 import nltk
 nltk.download('punkt')
+from nltk.corpus import stopwords
+words = stopwords.words("english")
 
 import re
 import pandas as pd
@@ -16,7 +18,8 @@ from tqdm import tqdm
 # librairies for graphs and analysis of results
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+# create a condtion pour que ça soit utiliser en dehors de la VM
+from wordcloud import WordCloud
 
 pd.set_option('display.max_columns', None)
 
@@ -37,11 +40,28 @@ except FileNotFoundError:
 
 
 def load_data():
-    df = pd.read_csv('train_data.csv', sep=',', header=0, encoding="ISO-8859-1")
+    df = pd.read_csv('./NLP classifier/train_data.csv', sep=',', header=0, encoding="ISO-8859-1")
     df = df.iloc[:, 1:4]
     df.columns = ['site', 'classification', 'text']
     df['classification'] = df['classification'].replace(['OPEN'], 'OTHER')
     df['classification'] = df['classification'].replace(['B2C/B2B'], 'B2C')
+    by_label = df.groupby("classification")
+    text_by_label = by_label["text"].apply(lambda x: ",".join(x))
+    word_clouds = {}
+    for i, text in text_by_label.iteritems():
+        if i.strip() != "":
+            word_cloud = WordCloud(stopwords={"https", "ID", "github", "use"}.union(words),
+                                collocations=False,
+                                background_color="white",
+                                max_font_size=60)
+            word_clouds[i] = word_cloud.generate(text)
+
+    for label, cloud in word_clouds.items():
+        print(label)
+        fixed = re.sub("/", "_", label)
+        label = label.replace("/","_")
+        cloud.to_image().save("./NLP classifier/graphs/" + label.lower() + "_cloud.png")
+
     df.loc[df["classification"] == "B2B", "classification"] = 0
     df.loc[df["classification"] == "B2C", "classification"] = 1
     df.loc[df["classification"] == "OTHER", "classification"] = 2
