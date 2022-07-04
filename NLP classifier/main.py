@@ -188,10 +188,7 @@ y_test_array = pd.get_dummies(y_test, drop_first=False).values
 ## Accuracy, Precision, Recall
 accuracy = metrics.accuracy_score(y_test, yPrediction)
 print("Accuracy:",  round(accuracy,2))
-# auc = metrics.roc_auc_score(y_test, predicted_prob, 
-#                             multi_class="ovr")
 
-# print("Auc:", round(auc,2))
 print("Detail:")
 print(metrics.classification_report(y_test, yPrediction))
     

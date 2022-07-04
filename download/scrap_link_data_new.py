@@ -32,11 +32,7 @@ chrome_options.add_argument('--headless')
 chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument('--disable-dev-shm-usage')
 chrome_options.add_argument("enable-automation")
-# Define an output queue
-# output = Queue()
 
-
-# list_problem_link = []
 def fetch_links(domain,url):
     try:
 
@@ -48,8 +44,6 @@ def fetch_links(domain,url):
             filename = path_data_html+ domain + "/" +url.split('/')[-1]+'.html'
             with open(filename,'wb') as f:
                 f.write(r.content)
-        # soup = BeautifulSoup(r.content,'html.content')
-        # print(soup)
     except Exception as e:
         pass
         # list_problem_link.append(url)
@@ -73,12 +67,9 @@ def fetch_links_selenium(domain, url):
                 f.write(r)
             
             driver.close()
-        # soup = BeautifulSoup(r.content,'html.content')
-        # print(soup)
+
     except Exception as e:
         pass
-        # list_problem_link.append(url)
-        # print(str(e))
     
 
 if __name__ == '__main__':
@@ -100,9 +91,6 @@ if __name__ == '__main__':
     print("=== Processing ===")
 
     Parallel(n_jobs=num_cores)(delayed(fetch_links_selenium)(domains[i], urls[i]) for i in tqdm(range(len(urls))))
-    # array = [(, i) for i in range(len(df_final))]
-    # with ThreadPoolExecutor(max_workers=30) as p:
-    #     p.map(fetch_links,domains[:],urls[:])
 
     print("Time Taken: ",str(time.time()-start)) # No optimization: 52sec
 

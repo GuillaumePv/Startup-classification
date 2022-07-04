@@ -44,8 +44,6 @@ class data_reader:
 
                 with open(filename,'wb') as f:
                     f.write(r.content)
-                # soup = BeautifulSoup(r.content,'html.content')
-                # print(soup)
             except Exception as e:
                 pass
                 # list_problem_link.append(url)

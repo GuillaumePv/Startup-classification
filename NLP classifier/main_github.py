@@ -44,7 +44,6 @@ print({label: len(labelled_df[labelled_df["label"] == label]) for label in label
 
 print("Loading unlabelled data")
 unlabelled_df = pd.read_csv(path_github_folder + "unclassified_new_github.csv")
-# unlabelled_df.tail(-100).to_csv("unlabelled.csv")
 unlabelled_df.dropna(axis=0, inplace=True, subset=["repo", "text"])
 unlabelled_df.reset_index(drop=True, inplace=True)
 
