@@ -1,14 +1,11 @@
-# ai_specialization
+# Start-ups classfication
+
+In this repositoty, we can find code to scrap html page and Github Readme form various start-ups.
+
+This repository is a extension of this previous paper: 
 
 code based on https://github.com/jorgeguzmanecon/measuring-founding-strategy
 
-## TO-DO
-
-- [ ] manage dynamic website
-- [ ] create folder with img and other file
-- [ ] choose characteristics for classify
-- [ ] put comments
-- [ ] create class for downloader
 
 ## Ideas
 

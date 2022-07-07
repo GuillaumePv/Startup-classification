@@ -107,7 +107,7 @@ Y_pred = classifier.predict(X_test)
 print(accuracy_score(Y_test, Y_pred))
 
 plt.hist(Y)
-plt.show()
+plt.close()
 
 print("Predicting")
 knn = KNeighborsClassifier(n_neighbors=5, weights="distance")
@@ -130,5 +130,5 @@ unlabelled_df.to_csv("part_two.csv", index=False)
 
 correct = unlabelled_df[np.logical_not(selection)]
 check = unlabelled_df[selection]
-correct.to_csv("correct.csv", index=False)
-check.to_csv("to_check.csv", index=False)
+correct.to_csv(path_github_folder + "/repos_classified_guillaume.csv", index=False)
+check.to_csv(path_github_folder + "/repos_to_check_guillaume.csv", index=False)
