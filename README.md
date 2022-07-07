@@ -12,17 +12,23 @@ code based on https://github.com/jorgeguzmanecon/measuring-founding-strategy
 ├── code
 │   ├── python      <- Code written in python
 │   │    ├── scrapper
+│   │    │ 
 │   │    ├── text_analysis
+│   │    │ 
 │   │    ├── NLP Classifier
 │   │    │      ├──  Website Classifier
+│   │    │      │ 
 │   │    │      ├──  GitHub Classifier
+│   │    │ 
 │   │    ├── utils
+│   │    │ 
 │   │    ├── driver
+│   │    │ 
 │   │    ├── old                <- Previous scripts which have been updated in the project
 │   │
 │   └── Stata            <- Code written in Stata
 │
-├── data             <- Folder that contains datasets (warning: actually we use dataset from remote path (server))
+├── data             <- Folder that contains datasets
 │
 │
 ├── Readme.md          <- Readme file for information about the project
