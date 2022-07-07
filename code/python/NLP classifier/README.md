@@ -1,6 +1,6 @@
 # NLP classifier
 
-In this folder, we have our towh ML model.
+In this folder, we have our two ML model.
 
 ## GitHub Classifier
 
