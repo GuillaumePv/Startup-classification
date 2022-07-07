@@ -23,5 +23,3 @@ https://nlp.stanford.edu/projects/glove/
 #6 check performance, if good save model in order to use it to predict
 
 #7 predict to new rows
-
-## Github Classifier
